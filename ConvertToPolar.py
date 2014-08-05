@@ -35,7 +35,6 @@ def convertToPolarImageWithInterpolation(points, centroid, filled = True, imageH
         rList.append(r)
         angleList.append(angle)
         if prevR > 0 and abs(angle - prevAngle) > 200:
-            print angle, prevAngle
             connectBottomIndex = i
         prevAngle = angle
         prevR = r
@@ -51,9 +50,6 @@ def convertToPolarImageWithInterpolation(points, centroid, filled = True, imageH
     for i in xrange(len(angleList)):
         points[i, 0, 0] = angleList[i]
         points[i, 0, 1] = rList[i]
-
-    print points
-    print connectBottomIndex
 
     contours = [points]
 
@@ -87,12 +83,8 @@ def convertToPolarImage(points, centroid, imageHeight = 500, imageWidth = 360):
         else:
             if prevR > 0 and abs(angle - prevAngle) > 200:
                 connectBottomIndex = i
-                print angle - prevAngle
-                print i
         prevAngle = angle
         prevR = r
-
-
 
     return outputImage
 
