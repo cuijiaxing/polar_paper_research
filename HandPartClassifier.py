@@ -69,6 +69,9 @@ class HandPartClassifier:
 
     @staticmethod
     def bottomUp(inputImage):
+        '''
+        scan from bottom to top to decide which class it belongs to
+        '''
         prev_class = 0;
         current_class = 0;
         prev_left = 0
@@ -84,7 +87,6 @@ class HandPartClassifier:
         palm_class = 0
         has_hand = False
 
-        tempHeight = 0
         for j in xrange(0, width):
             prev_class = inputImage[height - 1, width / 2]
             if not has_hand:
