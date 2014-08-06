@@ -16,7 +16,7 @@ class HandPartClassifier:
             for j in xrange(width):
                 c = inputImage[i, j]
                 if c == 0:
-                    classMap[i, j, :] = 0
+                    continue
                 
                 if not c in colorMap:
                     colorMap[c] = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))#colorArray[c % COLOR_NUM];
@@ -36,25 +36,27 @@ class HandPartClassifier:
         return inputImage;
 
     @staticmethod
-    def findLength(inputImage, x, y, left, right):
+    def findLength(inputImage, x, y):
         currentClass = inputImage[y, x]
         length = 1
         left = x
         right = x
+        width = inputImage.shape[1]
+
         while left >= 0:
             if inputImage[y, left] == currentClass:
-                --left
+                left -= 1
             else:
                 break
 
-        while right < inputImage.cols:
+        while right < width:
             if inputImage[y, right] == currentClass:
-                ++right
+                right += 1
             else:
                 break
 
-        ++left;
-        --right;
+        left += 1
+        right -= 1
         return right - left + 1, left, right
 
     @staticmethod
@@ -78,33 +80,32 @@ class HandPartClassifier:
         width = inputImage.shape[1]
         height = inputImage.shape[0]
 
-        palm_length = width;
-        palm_class = 0;
-        has_hand = False;
+        palm_length = width
+        palm_class = 0
+        has_hand = False
+
+        tempHeight = 0
         for j in xrange(0, width):
-            prev_class = inputImage[height - 1, j]
+            prev_class = inputImage[height - 1, width / 2]
             if not has_hand:
-                temp_length, prev_left, prev_right = HandPartClassifier.findLength(inputImage, j, height - 1, prev_left, prev_right);
-                if temp_length > palm_length/ 2 : 
+                temp_length, prev_left, prev_right = HandPartClassifier.findLength(inputImage, j, height - 1);
+                if temp_length > palm_length / 2 : 
                     palm_class = prev_class
                     has_hand = True
                     palm_length = temp_length
-
             #index begins from number of rows - 2 to 0
-            for i in xrange(height - 2, -1):
-                prev_class = inputImage[i +1 , j]
+            for i in reversed(xrange(0, height - 2)):
+                prev_class = inputImage[i + 1 , j]
                 current_class = inputImage[i, j]
                 if prev_class != current_class and prev_class != 0 and current_class != 0 :
-                    current_length, current_left, current_right = findLength(inputImage,j, i, current_left, current_right)
-                    #ofs<< i <<" "<< j <<" " << current_length << std::endl;
+                    current_length, current_left, current_right = HandPartClassifier.findLength(inputImage,j, i)
                     if prev_class == palm_class and current_length * 1.0 / palm_length < 0.2:
                         continue
 
-                    prev_length, prev_left, prev_right = findLength(inputImage, j, i + 1, prev_left, prev_right);
+                    prev_length, prev_left, prev_right = HandPartClassifier.findLength(inputImage, j, i + 1);
                     ratio = current_length * 1.0 / prev_length;
                     if (ratio > 0.5) or ratio < 0.1 or current_right - current_left < 5 :
-                        inputImage = fillLine(inputImage, i, current_left, current_right, prev_class)
-                        #ofs<< i <<" "<< j <<" " << ratio<<" "<<current_length<<" "<<prev_length<<std::endl;
+                        inputImage = HandPartClassifier.fillLine(inputImage, i, current_left, current_right, prev_class)
 
         return inputImage;
 
@@ -154,12 +155,11 @@ class HandPartClassifier:
         #fix the noise points
         #inputImage = fixImage(inputImage)
         inputImage = HandPartClassifier.roughClassify(inputImage)
-        print "rough classify finished!"
         #the season that we have to scan twice it to 
         #avoid  discontinuity. you can try scaning once
         #to see what will happen
-        #inputImage = HandPartClassifier.bottomUp(inputImage)
-        #inputImage = HandPartClassifier.bottomUp(inputImage)
+        inputImage = HandPartClassifier.bottomUp(inputImage)
+        inputImage = HandPartClassifier.bottomUp(inputImage)
         HandPartClassifier.showClassImage('classImage', inputImage)
         return inputImage
 
