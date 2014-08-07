@@ -13,7 +13,7 @@ class CartesianConverter:
 
 
     @staticmethod
-    def convertToCartesian3(inputImage, centroid, maxLength, outputWidth = 640, outputHeight = 480, scale = 2):
+    def convertToCartesian3(inputImage, centroid, maxLength, outputWidth = 640, outputHeight = 480, scale = 3):
         '''
         the input image has to be color image
         '''
