@@ -21,8 +21,7 @@ class CartesianConverter:
         width = inputImage.shape[1]
         height = inputImage.shape[0]
         polarMax = height
-        ratio = maxLength * 1.0 / polarMax
-        print ratio
+        ratio = maxLength * 1.0 / polarMax 
         for i in xrange(height):
             for j in xrange(width):
                 if inputImage[i, j].any() > 0:
