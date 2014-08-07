@@ -25,6 +25,7 @@ def convertToPolarImageWithInterpolation(points, centroid, filled = True, imageH
     prevR = 0
     prevAngle = 0
     connectBottomIndex = 0
+    maxR = 0
     for i in xrange(len(points) + 1):
         i = i % len(points)
         angle = math.atan2(points[i][0, 1] - centroid[1], points[i][0, 0] - centroid[0])
@@ -40,11 +41,13 @@ def convertToPolarImageWithInterpolation(points, centroid, filled = True, imageH
         prevR = r
 
     prevIndex = (connectBottomIndex - 1 + len(points)) % len(points)
-    added_y = [imageHeight - 1, imageHeight - 1, imageHeight - 1]
-    added_x = [angleList[prevIndex], 180, angleList[connectBottomIndex]]
+    #added_y = [imageHeight - 1, imageHeight - 1, imageHeight - 1]
+    #added_x = [angleList[prevIndex], 180, angleList[connectBottomIndex]]
+
+    added_y = [rList[prevIndex], imageHeight - 1, imageHeight - 1, imageHeight - 1, rList[connectBottomIndex]]
+    added_x = [0, 0, 180, 359, 359]
     rList = rList[0 : prevIndex + 1] + added_y + rList[prevIndex + 1 : ]
     angleList = angleList[0 : prevIndex + 1] + added_x + angleList[prevIndex + 1 : ]
-
     points = np.zeros((len(angleList), 1, 2), np.int)
 
     for i in xrange(len(angleList)):
@@ -57,7 +60,7 @@ def convertToPolarImageWithInterpolation(points, centroid, filled = True, imageH
         cv2.drawContours(outputImage, contours, 0, (255, 255, 255), cv2.cv.CV_FILLED)
     else:
         cv2.drawContours(outputImage, contours, 0, (255, 255, 255))
-    return outputImage
+    return outputImage, maxDistance
 
 
 
@@ -86,7 +89,7 @@ def convertToPolarImage(points, centroid, imageHeight = 500, imageWidth = 360):
         prevAngle = angle
         prevR = r
 
-    return outputImage
+    return outputImage, maxDistance
 
 
 
