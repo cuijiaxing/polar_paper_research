@@ -7,8 +7,8 @@ class CartesianConverter:
 
     @staticmethod
     def convertCoordinates(r, angle, centroid):
-        x = r * math.cos(angle) + centroid[0]
-        y = centroid[1] - r * math.sin(angle)
+        x = centroid[0] - r * math.cos(angle * 3.1415926 / 180)
+        y = centroid[1] - r * math.sin(angle * 3.1415926 / 180)
         return x, y
 
 
@@ -22,10 +22,11 @@ class CartesianConverter:
         height = inputImage.shape[0]
         polarMax = height
         ratio = maxLength * 1.0 / polarMax
+        print ratio
         for i in xrange(height):
             for j in xrange(width):
                 if inputImage[i, j].any() > 0:
-                    x, y = CartesianConverter.convertCoordinates(i * ratio, j, centroid)
+                    x, y = CartesianConverter.convertCoordinates((height - i - 1) * ratio, j, centroid)
                     outputImage[y, x, :] = inputImage[i, j, :]
         return outputImage
 
@@ -43,7 +44,7 @@ class CartesianConverter:
         for i in xrange(height):
             for j in xrange(width):
                 if inputImage[i, j] > 0:
-                    x, y = CartesianConverter.convertCoordinates(i * ratio, j, centroid)
+                    x, y = CartesianConverter.convertCoordinates((height - i - 1) * ratio, j, centroid)
                     outputImage[y, x] = inputImage[i, j]
         return outputImage
 
